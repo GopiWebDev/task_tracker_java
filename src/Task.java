@@ -1,4 +1,5 @@
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 public class Task {
     private static int counter = 1;
@@ -25,9 +26,11 @@ public class Task {
         this.updatedAt = LocalDateTime.now();
     }
 
+
     @Override
     public String toString() {
-        return "Task ID: " + id + ", Description: " + description + ", Status: " + status + ", Created At: " + createdAt + ", Updated At: " + updatedAt;
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
+        return "Task ID: " + id + ", Description: " + description + ", Status: " + status + ", Created At: " + createdAt.format(formatter) + ", Updated At: " + updatedAt.format(formatter);
     }
 }
 
