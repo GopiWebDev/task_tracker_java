@@ -1,21 +1,35 @@
 import java.time.LocalDateTime;
-import java.util.Scanner;
 
 public class TaskTracker {
     public static void main(String[] args){
-        Scanner scanner = new Scanner(System.in);
         TaskManager manager = new TaskManager();
 
-        Task task1 = new Task("Task 1");
-        Task task2 = new Task("Task 2");
-        Task task3 = new Task("Task 3");
-        manager.addTask(task1);
-        manager.addTask(task2);
-        manager.addTask(task3);
+        if(args.length < 1){
+            System.out.println("""
+                    Instructions:
+                    To add a task: java TaskTracker add <task description>
+                    To update a task: java TaskTracker update <id> <updated description>
+                    To delete a task: java TaskTracker delete <id>
+                    To mark in progress: java TaskTracker mark-in-progress <id>
+                    To mark done: java TaskTracker mark-done <id>
+                    To list all tasks: java TaskTracker list
+                    To list by status: java TaskTracker <done | todo | in-progress>
+                    """);
+        }
 
-        manager.markInProgress(2);
-        manager.markDone(3);
+        String command = args[0].toLowerCase();
 
-        manager.getTaskList(TaskStatus.NOT_DONE);
+        switch (command){
+            case "add" -> {
+                if(args[1] != null){
+                    manager.addTask(args[1]);
+                } else {
+                    System.out.println("USE: add <task description>");
+                }
+            }
+            case "update" -> {
+
+            }
+        }
     }
 }

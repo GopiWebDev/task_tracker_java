@@ -4,7 +4,8 @@ import java.util.stream.Stream;
 public class TaskManager {
     ArrayList<Task> tasks = new ArrayList<Task>();
 
-    void addTask(Task task){
+    void addTask(String description){
+        Task task = new Task(description);
         this.tasks.add(task);
     }
 
