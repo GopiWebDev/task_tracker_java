@@ -3,7 +3,7 @@ import java.time.format.DateTimeFormatter;
 
 public class Task {
     private static int counter = 1;
-    private final int id;
+    final int id;
     String description;
     TaskStatus status;
     LocalDateTime createdAt;
@@ -15,10 +15,6 @@ public class Task {
         this.status = TaskStatus.TODO;
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
-    }
-
-    int getId(){
-        return this.id;
     }
 
     void setStatus(TaskStatus status){
