@@ -13,6 +13,9 @@ public class TaskTracker {
         manager.addTask(task2);
         manager.addTask(task3);
 
-        manager.getTaskList(TaskStatus.TODO);
+        manager.markInProgress(2);
+        manager.markDone(3);
+
+        manager.getTaskList(TaskStatus.NOT_DONE);
     }
 }

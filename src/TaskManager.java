@@ -49,11 +49,29 @@ public class TaskManager {
         return this.tasks.stream().filter(task -> task.id == id).findFirst().orElse(null);
     }
 
+    void getTaskList(){
+        this.tasks.forEach(t -> System.out.println(t));
+    }
+
     void getTaskList(TaskStatus filter){
         switch (filter){
             case TODO -> {
-                Stream<Task> tasks = this.tasks.stream().filter(task -> task.status == filter);
+                Stream<Task> tasks = this.tasks.stream().filter(task -> task.status == TaskStatus.TODO);
+                tasks.forEach(task -> System.out.println(task));
             }
+            case IN_PROGRESS -> {
+                Stream<Task> tasks = this.tasks.stream().filter(task -> task.status == TaskStatus.IN_PROGRESS);
+                tasks.forEach(task -> System.out.println(task));
+            }
+            case DONE -> {
+                Stream<Task> tasks = this.tasks.stream().filter(task -> task.status == TaskStatus.DONE);
+                tasks.forEach(task -> System.out.println(task));
+            }
+            case NOT_DONE -> {
+                Stream<Task> tasks = this.tasks.stream().filter(task -> task.status != TaskStatus.DONE);
+                tasks.forEach(task -> System.out.println(task));
+            }
+            default -> this.tasks.forEach(t -> System.out.println(t));
         }
     }
 }
