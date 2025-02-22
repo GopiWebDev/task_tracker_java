@@ -1,78 +1,117 @@
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.File;
+import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.stream.Stream;
 
-public class TaskManager {
-    ArrayList<Task> tasks = new ArrayList<Task>();
+public class TaskManager  {
+    private static final String FILE_NAME = "tasks.json";
+    ObjectMapper objectMapper = new ObjectMapper();
+    ArrayList<Task> tasks;
 
-    void addTask(String description){
-        Task task = new Task(description);
-        this.tasks.add(task);
+    public TaskManager(){
+        this.tasks = this.loadTasks();
     }
 
-    void updateTask(int id, String description) {
+    private ArrayList<Task> loadTasks() {
+        File file = new File(FILE_NAME);
+        if(file.exists()){
+            try {
+                return objectMapper.readValue(file, new TypeReference<>() {});
+            } catch (IOException e){
+                e.printStackTrace();
+            }
+        }
+        return new ArrayList<>();
+    }
+
+    void addTask(String description) throws IOException {
+        Task task = new Task(description);
+        this.tasks.add(task);
+        this.updateTaskList();
+    }
+
+    void updateTask(int id, String description) throws IOException {
         Task targetTask = getTask(id);
 
         if (targetTask != null) {
-            targetTask.description = description;
+            targetTask.setDescription(description);
+            targetTask.setUpdatedAt(LocalDateTime.now());
             System.out.println("Task updated successfully");
+            this.updateTaskList();
         } else {
             System.out.println("Task with ID: " + id + " not found");
         }
     }
 
-    void deleteTask(int id){
+    void deleteTask(int id) throws IOException {
         Task targetTask = getTask(id);
 
         if(targetTask != null){
             System.out.println("Task deleted successfully");
+            this.updateTaskList();
         } else {
             System.out.println("Task with ID: " + id + " not found");
         }
     }
 
-    void markInProgress(int id){
+    void markInProgress(int id) throws IOException {
         Task targetTask = getTask(id);
 
         if(targetTask != null){
             targetTask.setStatus(TaskStatus.IN_PROGRESS);
+            targetTask.setUpdatedAt(LocalDateTime.now());
+            this.updateTaskList();
         }
     }
 
-    void markDone(int id){
+    void markDone(int id) throws IOException {
         Task targetTask = getTask(id);
 
         if(targetTask != null){
             targetTask.setStatus(TaskStatus.DONE);
+            targetTask.setUpdatedAt(LocalDateTime.now());
+            this.updateTaskList();
         }
     }
 
     Task getTask(int id){
-        return this.tasks.stream().filter(task -> task.id == id).findFirst().orElse(null);
+        return this.tasks.stream().filter(task -> task.getId() == id).findFirst().orElse(null);
     }
 
     void getTaskList(){
-        this.tasks.forEach(t -> System.out.println(t));
+        this.tasks.forEach(System.out::println);
+    }
+
+    private ArrayList<Task> getList(){
+        return this.tasks;
+    }
+
+    private void updateTaskList() throws IOException {
+        objectMapper.writeValue(new File(FILE_NAME), getList());
     }
 
     void getTaskList(TaskStatus filter){
         switch (filter){
             case TODO -> {
-                Stream<Task> tasks = this.tasks.stream().filter(task -> task.status == TaskStatus.TODO);
-                tasks.forEach(task -> System.out.println(task));
+                Stream<Task> tasks = this.tasks.stream().filter(task -> task.getStatus() == TaskStatus.TODO);
+                tasks.forEach(System.out::println);
             }
             case IN_PROGRESS -> {
-                Stream<Task> tasks = this.tasks.stream().filter(task -> task.status == TaskStatus.IN_PROGRESS);
-                tasks.forEach(task -> System.out.println(task));
+                Stream<Task> tasks = this.tasks.stream().filter(task -> task.getStatus() == TaskStatus.IN_PROGRESS);
+                tasks.forEach(System.out::println);
             }
             case DONE -> {
-                Stream<Task> tasks = this.tasks.stream().filter(task -> task.status == TaskStatus.DONE);
-                tasks.forEach(task -> System.out.println(task));
+                Stream<Task> tasks = this.tasks.stream().filter(task -> task.getStatus() == TaskStatus.DONE);
+                tasks.forEach(System.out::println);
             }
             case NOT_DONE -> {
-                Stream<Task> tasks = this.tasks.stream().filter(task -> task.status != TaskStatus.DONE);
-                tasks.forEach(task -> System.out.println(task));
+                Stream<Task> tasks = this.tasks.stream().filter(task -> task.getStatus() != TaskStatus.DONE);
+                tasks.forEach(System.out::println);
             }
-            default -> this.tasks.forEach(t -> System.out.println(t));
+            default -> this.tasks.forEach(System.out::println);
         }
     }
 }
