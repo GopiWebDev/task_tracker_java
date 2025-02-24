@@ -3,6 +3,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.File;
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.stream.Stream;
 
@@ -10,6 +11,7 @@ public class TaskManager  {
     private static final String FILE_NAME = "tasks.json";
     ObjectMapper objectMapper = new ObjectMapper();
     ArrayList<Task> tasks;
+    private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
 
     public TaskManager(){
         this.tasks = this.loadTasks();
@@ -17,13 +19,20 @@ public class TaskManager  {
 
     private ArrayList<Task> loadTasks() {
         File file = new File(FILE_NAME);
-        if(file.exists()){
+        if(file.exists() && file.length() > 0){
             try {
-                return objectMapper.readValue(file, new TypeReference<>() {});
+                 ArrayList<Task> loadedTask = objectMapper.readValue(file, new TypeReference<>() {});
+                 if(!loadedTask.isEmpty()){
+                     int maxId = loadedTask.stream().mapToInt(Task::getId).max().orElse(0);
+                     Task.setCounter(maxId + 1);
+                 }
+
+                 return loadedTask;
             } catch (IOException e){
                 e.printStackTrace();
             }
         }
+
         return new ArrayList<>();
     }
 
@@ -38,7 +47,7 @@ public class TaskManager  {
 
         if (targetTask != null) {
             targetTask.setDescription(description);
-            targetTask.setUpdatedAt(LocalDateTime.now());
+            targetTask.setUpdatedAt(LocalDateTime.now().format(FORMATTER));
             System.out.println("Task updated successfully");
             this.updateTaskList();
         } else {
@@ -47,11 +56,11 @@ public class TaskManager  {
     }
 
     void deleteTask(int id) throws IOException {
-        Task targetTask = getTask(id);
+        boolean removed = tasks.removeIf(task -> task.getId() == id);
 
-        if(targetTask != null){
-            System.out.println("Task deleted successfully");
+        if(removed){
             this.updateTaskList();
+            System.out.println("Task deleted successfully");
         } else {
             System.out.println("Task with ID: " + id + " not found");
         }
@@ -62,7 +71,7 @@ public class TaskManager  {
 
         if(targetTask != null){
             targetTask.setStatus(TaskStatus.IN_PROGRESS);
-            targetTask.setUpdatedAt(LocalDateTime.now());
+            targetTask.setUpdatedAt(LocalDateTime.now().format(FORMATTER));
             this.updateTaskList();
         }
     }
@@ -72,7 +81,7 @@ public class TaskManager  {
 
         if(targetTask != null){
             targetTask.setStatus(TaskStatus.DONE);
-            targetTask.setUpdatedAt(LocalDateTime.now());
+            targetTask.setUpdatedAt(LocalDateTime.now().format(FORMATTER));
             this.updateTaskList();
         }
     }
@@ -85,12 +94,13 @@ public class TaskManager  {
         this.tasks.forEach(System.out::println);
     }
 
-    private ArrayList<Task> getList(){
-        return this.tasks;
-    }
-
     private void updateTaskList() throws IOException {
-        objectMapper.writeValue(new File(FILE_NAME), getList());
+        try {
+            objectMapper.writeValue(new File(FILE_NAME), tasks);
+        } catch (IOException e) {
+            System.out.println("❌ Error saving tasks: " + e.getMessage());
+        }
+
     }
 
     void getTaskList(TaskStatus filter){

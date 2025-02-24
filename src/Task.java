@@ -2,7 +2,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 public class Task {
-    private static int counter = 1;
+    private static int counter = 1 ;
     private int id;
     private String description;
     private TaskStatus status;
@@ -24,35 +24,31 @@ public class Task {
     public int getId(){
         return this.id;
     };
-
     public String getDescription(){
         return this.description;
     }
-
-    void setDescription(String description){
-        this.description = description;
-    }
-
     public TaskStatus getStatus(){
         return this.status;
     }
+    public String getCreatedAt(){
+        return this.createdAt;
+    }
+    public String getUpdatedAt(){
+        return this.updatedAt;
+    }
 
+    static void setCounter(int maxId){
+        counter = maxId;
+    }
+    void setDescription(String description){
+        this.description = description;
+    }
     void setStatus(TaskStatus status){
         this.status = status;
         this.updatedAt = LocalDateTime.now().format(FORMATTER);
     }
-
-    public String getCreatedAt(){
-        return this.createdAt;
-    }
-
-    public String getUpdatedAt(){
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
-        return this.updatedAt;
-    }
-
-    void setUpdatedAt(LocalDateTime dateTime){
-        this.updatedAt = dateTime.format(FORMATTER);
+    void setUpdatedAt(String dateTime){
+        this.updatedAt = dateTime;
     }
 
     @Override
