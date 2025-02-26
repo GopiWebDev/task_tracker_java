@@ -1,4 +1,4 @@
-
+package com.example;
 import java.io.IOException;
 
 public class TaskTracker {
@@ -50,7 +50,7 @@ public class TaskTracker {
                     System.out.println("USE: mark-in-progress <id>");
                 }
             }
-            case "done" -> {
+            case "mark-done" -> {
                 if(args[1] != null){
                     manager.markDone(Integer.parseInt(args[1]));
                 } else {
@@ -58,17 +58,14 @@ public class TaskTracker {
                 }
             }
             case "list" -> {
-                if(args[1] != null){
-                    if(args[2] == null){
-                        manager.getTaskList();
-                    } else if (args[2].equals("done")){
-                        manager.getTaskList(TaskStatus.DONE);
-                    } else if (args[2].equals("todo")){
-                        manager.getTaskList(TaskStatus.TODO);
-                    } else if (args[2].equals("in-progress")){
-                        manager.getTaskList(TaskStatus.IN_PROGRESS);
-                    } else {
-                        System.out.println("USE: list <done | todo | in-progress>");
+                if (args.length == 1) {
+                    manager.getTaskList();
+                } else if (args.length == 2) {
+                    switch (args[1]) {
+                        case "done" -> manager.getTaskList(TaskStatus.DONE);
+                        case "todo" -> manager.getTaskList(TaskStatus.TODO);
+                        case "in-progress" -> manager.getTaskList(TaskStatus.IN_PROGRESS);
+                        default -> System.out.println("USE: list <done | todo | in-progress>");
                     }
                 } else {
                     System.out.println("USE: list");

@@ -1,3 +1,4 @@
+package com.example;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
@@ -55,11 +56,4 @@ public class Task {
     public String toString() {
         return "Task ID: " + id + ", Description: " + description + ", Status: " + status + ", Created At: " + createdAt + ", Updated At: " + updatedAt;
     }
-}
-
-enum TaskStatus {
-    TODO,
-    IN_PROGRESS,
-    DONE,
-    NOT_DONE
 }
